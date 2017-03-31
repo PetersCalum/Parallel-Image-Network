@@ -8,3 +8,4 @@ of 8.*/
 is divided into.*/
 #define HOR_ARRAYS IMAGE_WIDTH/8
 #define VER_ARRAYS IMAGE_HEIGHT/8
+#define COLOUR_CHANNELS 4

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "image_handling.h"
 #include "image_properties.h"
+#include "lodepng.h"
 
 typedef struct {
 	char image_data[64][8]; //the current state of each bit in a pixel is stored as a single char
@@ -19,11 +20,15 @@ void
 array_loader(image_chunk ***image_grid, char* file_location)
 {
 	int array_length;
-	unsigned char pix_mask[] = { 128, 64, 32, 16, 8, 4, 2, 1 }; //bitmask arrays for selecting bits from a char, MSB to LSB
+	unsigned char pix_mask[8]; //bitmask array for selecting bits from a char, MSB to LSB
+	for (int i = 0; i < 8; i++)
+	{
+		pix_mask[i] = (1 << (7 - i));
+	}
 	unsigned char *image = load_image(file_location, &array_length);
 	/* Move through the image in blocks of eight lines at a time, filling out
 	the blocks on each row together.*/
-	for (int colour = 0; colour < 3; colour++)
+	for (int colour = 0; colour < COLOUR_CHANNELS; colour++)
 	{
 		int channel_offset = colour*NUMBER_PIXELS; //how offset in the loaded array each colour channel is
 		//i.e., no offset for red, a number of pixels for green, 2x number of pixels for blue.
@@ -39,9 +44,10 @@ array_loader(image_chunk ***image_grid, char* file_location)
 					unsigned char pixel = image[channel_offset + chunk_row_offset + image_row_offset + pixel_num];
 					int chunk_x = pixel_num / 8; //for every 8 pixels, move onto the next chunk.
 					int pixel_in_block = pixel_num % 8;
+					printf("%d : ", pixel);
 					for (int bit = 0; bit < 8; bit++) {
 						int bit_offset = pixel_in_block * 8 + bit;
-						if (pixel & pix_mask[bit] != 0)
+						if ((pixel & pix_mask[bit]) != 0)
 						{
 							image_grid[chunk_x][chunk_row][colour].image_data[bit_offset][image_row] = 1;
 						}
@@ -50,13 +56,14 @@ array_loader(image_chunk ***image_grid, char* file_location)
 							image_grid[chunk_x][chunk_row][colour].image_data[bit_offset][image_row] = 0;
 						}
 					}
+					printf("\n");
 				}
 			}
 		}
 	}
 
 	/*Now initialising the relationships to a blank array*/
-	for (int colour = 0; colour < 3; colour++)
+	for (int colour = 0; colour < COLOUR_CHANNELS; colour++)
 	{
 		for (int chunk_x = 0; chunk_x < HOR_ARRAYS; chunk_x++)
 		{
@@ -78,9 +85,9 @@ array_loader(image_chunk ***image_grid, char* file_location)
 void
 array_saver(image_chunk ***image_grid, char* file_location)
 {
-	unsigned char* image_data = malloc(sizeof(char)*NUMBER_PIXELS * 3);
+	unsigned char* image_data = malloc(sizeof(char)*NUMBER_PIXELS * COLOUR_CHANNELS);
 
-	for (int colour = 0; colour < 3; colour++)
+	for (int colour = 0; colour < COLOUR_CHANNELS; colour++)
 	{
 		int channel_offset = colour*NUMBER_PIXELS; //how much to offset the pixels by to arrange colour channels correctly;
 		for (int chunk_x = 0; chunk_x < HOR_ARRAYS; chunk_x++) 
@@ -125,7 +132,7 @@ network_saver(char* file_location, image_chunk*** image_grid)
 	{
 		for (int j = 0; j < VER_ARRAYS; j++)
 		{
-			for (int k = 0; k < 3; k++)
+			for (int k = 0; k < COLOUR_CHANNELS; k++)
 			{
 				fwrite(image_grid[i][j][k].network_weights, sizeof(short), (512 * 512), network_file);
 			}
@@ -149,12 +156,12 @@ main(int argc, char *argv[])
 		image_grid[i] = (image_chunk**) malloc(VER_ARRAYS * sizeof(image_chunk*));
 		for (int j = 0; j < VER_ARRAYS; j++)
 		{
-			image_grid[i][j] = (image_chunk*) malloc(3 * sizeof(image_chunk));
+			image_grid[i][j] = (image_chunk*) malloc(COLOUR_CHANNELS * sizeof(image_chunk));
 		}
 	}
 
-	array_loader(image_grid, "TestImage.png");
-	network_saver("relationships.bin", image_grid);
+	array_loader(image_grid, "image.png");
+	array_saver(image_grid, "image2.png");
 
 	for (int i = 0; i < HOR_ARRAYS; i++)
 	{
@@ -168,4 +175,5 @@ main(int argc, char *argv[])
 
 
 	return 0;
+
 }
