@@ -156,8 +156,10 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClCompile Include="image_handling.c" />
     <ClCompile Include="lodepng.c" />
+    <ClCompile Include="parallel_network.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="image_handling.h" />
     <ClInclude Include="image_properties.h" />
     <ClInclude Include="lodepng.h" />
   </ItemGroup>

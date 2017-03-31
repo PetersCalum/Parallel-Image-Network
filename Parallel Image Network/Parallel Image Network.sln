@@ -5,6 +5,12 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Parallel Image Network", "Parallel Image Network\Parallel Image Network.vcxproj", "{74D690D4-383C-4B9A-A9B4-0979212AF5BF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44E0C083-D259-441E-AD23-F9D422373211}"
+	ProjectSection(SolutionItems) = preProject
+		image_handling.h = image_handling.h
+		parallel_network.c = parallel_network.c
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
