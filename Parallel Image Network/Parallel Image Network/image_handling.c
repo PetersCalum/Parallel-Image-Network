@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-//#include <windows.h>
 #include "lodepng.h"
 #include "image_properties.h"
 
@@ -30,7 +29,7 @@ unsigned char
 					loaded_image[i] = load_output[i*COLOUR_CHANNELS]; //red channel
 					loaded_image[NUMBER_PIXELS + i] = load_output[1 + (i * COLOUR_CHANNELS)]; //green channel
 					loaded_image[NUMBER_PIXELS * 2 + i] = load_output[2 + (i * COLOUR_CHANNELS)]; //blue channel
-					loaded_image[NUMBER_PIXELS * 3 + i] = load_output[3 + (i * COLOUR_CHANNELS)]; //blue channel
+					loaded_image[NUMBER_PIXELS * 3 + i] = load_output[3 + (i * COLOUR_CHANNELS)]; //alpha channel
 				}
 				free(load_output);
 				return loaded_image; //return the array
@@ -43,7 +42,10 @@ unsigned char
 	}
 	else
 	{
-		printf("Error in loading image. Error Code: %d", error_digit);
+		if (error_digit == 78)
+			printf("File not found, check the file name was spelled correctly.\n");
+		else
+			printf("Error in loading image. Error Code: %d", error_digit); 
 		return NULL;
 	}
 }
@@ -65,30 +67,3 @@ save_image(char* file_location, char* image_data)
 		}
 	}
 }
-
-/*int main(void)
-{
-
-	int array_length;
-	unsigned char *image = load_image("TestImage.png", &array_length);
-	if (image != NULL) {
-		for (int i = 0; i < array_length; i++)
-		{
-			printf("%d \n", *(image + i));
-		}
-		char* red = malloc(sizeof(char) * NUMBER_PIXELS);
-		char* green = malloc(sizeof(char) * NUMBER_PIXELS);
-		char* blue= malloc(sizeof(char) * NUMBER_PIXELS);
-		for (int i = 0; i < NUMBER_PIXELS; i++) 
-		{
-			*(red + i) = *(image + i);
-			*(green + i) = *(image + NUMBER_PIXELS + i);
-			*(blue + i) = *(image + (NUMBER_PIXELS * 2) + i);
-		}
-		save_image("outputimageredgreenblue.png", red, red, red);
-		free(red);
-		free(green);
-		free(blue);
-		free(image);
-	}
-}*/
