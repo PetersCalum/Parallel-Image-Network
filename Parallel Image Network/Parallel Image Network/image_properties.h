@@ -1,3 +1,6 @@
+#ifndef image_properties_H
+#define image_properties_H
+
 /*To avoid unexpected behaviour, image width and height should be kept as multiples
 of 8.*/
 #define IMAGE_WIDTH 64
@@ -9,3 +12,5 @@ is divided into.*/
 #define HOR_ARRAYS IMAGE_WIDTH/8
 #define VER_ARRAYS IMAGE_HEIGHT/8
 #define COLOUR_CHANNELS 4
+
+#endif // !image_properties_H
