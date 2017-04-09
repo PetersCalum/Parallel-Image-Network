@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "image_handling.h"
 #include "image_properties.h"
 #include "array_properties.h"
 
@@ -13,10 +12,10 @@ train_network(image_chunk*** image_grid, network_chunk*** network_grid)
 		{
 			for (int chunk_y = 0; chunk_y < VER_ARRAYS; chunk_y++)
 			{
-				for (int bit_relating_to = 0; bit_relating_to < 512; bit_relating_to++)
+				for (int bit_relating_to = 0; bit_relating_to < BITS_PER_SUBIMAGE; bit_relating_to++)
 				{
 					char bit = image_grid[chunk_x][chunk_y][colour].image_data[bit_relating_to % 64][bit_relating_to / 64];
-					for (int bit_relating_from = 0; bit_relating_from < 512; bit_relating_from++)
+					for (int bit_relating_from = 0; bit_relating_from < BITS_PER_SUBIMAGE; bit_relating_from++)
 					{
 						char relating_bit = image_grid[chunk_x][chunk_y][colour].image_data[bit_relating_from % 64][bit_relating_from / 64];
 						if (bit == relating_bit)
@@ -51,11 +50,15 @@ neuron_output(image_chunk*** image_grid, network_chunk*** network_grid, int bit_
 {
 	int sum_correlations = 0;
 	char return_value = 0;
-	for (int i = 0; i < 512; i++)
+	for (int i = 0; i < BITS_PER_SUBIMAGE; i++)
 	{
-		int weighted_value = (image_grid[chunk_x][chunk_y][colour].image_data[i % 64][i / 64]) * 2 - 1; //converts an off pixel into a negative value 
+		char weighted_value = (image_grid[chunk_x][chunk_y][colour].image_data[i % 64][i / 64]) * 2 - 1; //converts an off pixel into a negative value 
 																										//but leaves an on pixel alone
 		sum_correlations += network_grid[chunk_x][chunk_y][colour].network_weights[bit_num][i] * weighted_value;
+		//by multiplying the weighted value by the correlation, get the output for each individual neuron.
+		//when these are summed, then (based on the current state of the image) a positive or negative value for
+		//each bit will be predicted. With a sufficiently recognisable image, then eventually this will return
+		//all bits to the correct value.
 	}
 	if (sum_correlations > 0)
 		return_value = 1;
@@ -67,14 +70,14 @@ neuron_output(image_chunk*** image_grid, network_chunk*** network_grid, int bit_
 void
 recall_chunk(image_chunk*** image_grid, network_chunk*** network_grid, int chunk_x, int chunk_y, int colour)
 {
-	int sequence[512];
-	for (int i = 0; i < 512; i++)
+	int sequence[BITS_PER_SUBIMAGE];
+	for (int i = 0; i < BITS_PER_SUBIMAGE; i++)
 	{
 		sequence[i] = i;
 	}
-	shuffle_int(sequence, 512);
+	shuffle_int(sequence, BITS_PER_SUBIMAGE);
 
-	for (int i = 0; i < 512; i++) {
+	for (int i = 0; i < BITS_PER_SUBIMAGE; i++) {
 		int bitnum = sequence[i];
 		int bit_x = sequence[i] % 64;
 		int bit_y = sequence[i] / 64;

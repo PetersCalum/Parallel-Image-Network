@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "image_properties.h"
+#include "image_handling.h""
 #include "array_properties.h"
 #include "shared_functions.h"
 
+
 /* loads in a given image and populates the image chunks.*/
-void
+int
 array_loader(image_chunk ***image_grid, char* file_location)
 {
 	int array_length;
@@ -15,6 +17,10 @@ array_loader(image_chunk ***image_grid, char* file_location)
 		pix_mask[i] = (1 << (7 - i));
 	}
 	unsigned char *image = load_image(file_location, &array_length);
+	if (image == NULL)
+	{
+		return -1;
+	}
 	/* Move through the image in blocks of eight lines at a time, filling out
 	the blocks on each row together.*/
 	for (int colour = 0; colour < COLOUR_CHANNELS; colour++)
@@ -48,13 +54,13 @@ array_loader(image_chunk ***image_grid, char* file_location)
 			}
 		}
 	}
-	return;
+	return 0;
 }
 
 void
 array_saver(image_chunk ***image_grid, char* file_location)
 {
-	unsigned char* image_data = malloc(sizeof(char)*NUMBER_PIXELS * COLOUR_CHANNELS);
+	unsigned char* image_data = (unsigned char*)malloc(sizeof(char)*NUMBER_PIXELS * COLOUR_CHANNELS);
 
 	for (int colour = 0; colour < COLOUR_CHANNELS; colour++)
 	{
@@ -92,7 +98,7 @@ array_saver(image_chunk ***image_grid, char* file_location)
 }
 
 void
-network_saver(char* file_location, network_chunk*** network_grid)
+network_saver(network_chunk *** network_grid, char * file_location)
 {
 	FILE *network_file;
 
@@ -103,7 +109,7 @@ network_saver(char* file_location, network_chunk*** network_grid)
 		{
 			for (int k = 0; k < COLOUR_CHANNELS; k++)
 			{
-				fwrite(network_grid[i][j][k].network_weights, sizeof(short), (512 * 512), network_file);
+				fwrite(network_grid[i][j][k].network_weights, sizeof(short), (BITS_PER_SUBIMAGE * BITS_PER_SUBIMAGE), network_file);
 			}
 		}
 	}
@@ -111,6 +117,33 @@ network_saver(char* file_location, network_chunk*** network_grid)
 	fclose(network_file);
 
 	return;
+}
+
+int
+network_loader(network_chunk *** network_grid, char * file_location)
+{
+	FILE *network_file;
+
+	network_file = fopen(file_location, "r");
+
+	if (!network_file) {
+		printf("Error opening network file\n");
+		return -1;
+	}
+	for (int i = 0; i < HOR_ARRAYS; i++)
+	{
+		for (int j = 0; j < VER_ARRAYS; j++)
+		{
+			for (int k = 0; k < COLOUR_CHANNELS; k++)
+			{
+				fread(network_grid[i][j][k].network_weights, sizeof(short), (BITS_PER_SUBIMAGE * BITS_PER_SUBIMAGE), network_file);
+			}
+		}
+	}
+
+	fclose(network_file);
+
+	return 0;
 }
 
 void

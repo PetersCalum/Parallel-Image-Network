@@ -15,6 +15,6 @@ Takes in a file location to save to and three separate arrays for each
 colour channel and saves them as a PNG file in the specified location.
 */
 void
-save_image(char* file_location, char* image_data);
+save_image(char* file_location, unsigned char* image_data);
 
 #endif

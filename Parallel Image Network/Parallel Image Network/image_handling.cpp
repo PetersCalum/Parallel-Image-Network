@@ -21,7 +21,7 @@ unsigned char
 		else
 		{
 			*array_length = (NUMBER_PIXELS * COLOUR_CHANNELS); //record array size--one value per pixel per colour channel
-			unsigned char *loaded_image = malloc(sizeof(char) * *array_length); //allocate array memory
+			unsigned char *loaded_image = (unsigned char*)malloc(sizeof(char) * *array_length); //allocate array memory
 			if (loaded_image != NULL) 
 			{
 				for (int i = 0; i < NUMBER_PIXELS; i++)
@@ -51,10 +51,10 @@ unsigned char
 }
 
 void 
-save_image(char* file_location, char* image_data)
+save_image(char* file_location, unsigned char* image_data)
 {
 	if (image_data != NULL) {
-		char *png_data = malloc(sizeof(char) * NUMBER_PIXELS * COLOUR_CHANNELS);
+		unsigned char *png_data = (unsigned char*) malloc(sizeof(char) * NUMBER_PIXELS * COLOUR_CHANNELS);
 		if (png_data != NULL) {
 			for (int i = 0; i < NUMBER_PIXELS; i++)
 			{

@@ -1,5 +1,5 @@
-#ifndef image_properties_H
-#define image_properties_H
+#ifndef image_properties_h
+#define image_properties_h
 
 /*To avoid unexpected behaviour, image width and height should be kept as multiples
 of 8.*/
