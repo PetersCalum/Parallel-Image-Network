@@ -106,6 +106,7 @@ main(int argc, char *argv[])
 		case 'k' : //s(K)ip Training
 			skip_training = 1;
 			current_arg += 1;
+			break;
 		case 'd': //(D)istortion
 			distort = strtol(argv[current_arg + 1], NULL, 10);
 			current_arg += 2;
@@ -113,6 +114,7 @@ main(int argc, char *argv[])
 		case 'r' : //(R)epeats
 			repeats = strtol(argv[current_arg + 1], NULL, 10);
 			current_arg += 2;
+			break;
 		default :
 			printf("Argument %d invalid\n", current_arg);
 			current_arg += 1;
