@@ -4,7 +4,6 @@
 #include <time.h>
 #include <cuda_runtime.h> 
 #include <device_launch_parameters.h>
-#include "image_handling.h"
 #include "image_properties.h"
 #include "array_properties.h"
 #include "serial_functions.h"
