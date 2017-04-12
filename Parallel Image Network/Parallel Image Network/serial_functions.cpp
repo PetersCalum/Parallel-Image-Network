@@ -17,6 +17,8 @@ train_network(image_chunk*** image_grid, network_chunk*** network_grid)
 					char bit = image_grid[chunk_x][chunk_y][colour].image_data[bit_relating_to % 64][bit_relating_to / 64];
 					for (int bit_relating_from = 0; bit_relating_from < BITS_PER_SUBIMAGE; bit_relating_from++)
 					{
+						//if the two bits match, then increase the weight of their connection--i.e., the more often they match
+						//the stronger the positive correlation. 
 						char relating_bit = image_grid[chunk_x][chunk_y][colour].image_data[bit_relating_from % 64][bit_relating_from / 64];
 						if (bit == relating_bit)
 							network_grid[chunk_x][chunk_y][colour].network_weights[bit_relating_to][bit_relating_from] += 1;
@@ -75,8 +77,10 @@ recall_chunk(image_chunk*** image_grid, network_chunk*** network_grid, int chunk
 	{
 		sequence[i] = i;
 	}
+	//randomise the order in which bits are updated.
 	shuffle_int(sequence, BITS_PER_SUBIMAGE);
 
+	//get the output for the neurons in the order supplied.
 	for (int i = 0; i < BITS_PER_SUBIMAGE; i++) {
 		int bitnum = sequence[i];
 		int bit_x = sequence[i] % 64;
